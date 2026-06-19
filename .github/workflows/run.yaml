@@ -50,15 +50,12 @@ jobs:
     - uses: actions/checkout@v7
     - name: Make binaries
       run: |
-         export ARCH=x86_64
-
+        export ARCH=x86_64
         export CC="clang -arch $ARCH"
         export CXX="clang++ -arch $ARCH"
-
         export CFLAGS="-arch $ARCH"
         export CXXFLAGS="-arch $ARCH"
         export LDFLAGS="-arch $ARCH"
-
         export LIBRARY_PATH=$(brew --prefix openssl@3)/lib
         export CPATH=$(brew --prefix openssl@3)/include
 
