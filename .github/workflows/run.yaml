@@ -22,7 +22,7 @@ jobs:
         with:
           name: pspdecrypt-release
           path: pspdecrypt.zip
-release:
+  release:
     needs: build
     runs-on: ubuntu-latest
     steps:
