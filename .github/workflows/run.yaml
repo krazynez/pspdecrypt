@@ -43,6 +43,25 @@ jobs:
         with:
           name: windows-binaries
           path: pspdecrypt.exe
+    release-windows:
+      needs: build-windows
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download artifacts
+          uses: actions/download-artifacts@v8
+          with:
+            name: windows-binaries
+            path: pspdecrypt.exe
+        - name:
+          uses: softprops/action-gh-release@v3
+          with:
+            tag_name: latest
+            name: windows-binary
+            prerelease: true
+            files: pspdecrypt-windows.zip
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         
   build-macos-x86:
     runs-on: macos-15-intel
