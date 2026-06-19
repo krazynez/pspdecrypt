@@ -5,12 +5,12 @@ on:
       - master
 jobs:
   build:
-    runs-on: alpine-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Dependencies
         run: |
-          apk update
-          apk add clang automake autoconf zip sudo automake
+          apt-get update
+          apt-get install clang automake autoconf p7zip-full sudo automake -y
 
       - name: Build
         run: make clean && make
