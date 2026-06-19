@@ -43,26 +43,7 @@ jobs:
         with:
           name: windows-binaries
           path: pspdecrypt.exe
-    release-windows:
-      needs: build-windows
-      runs-on: ubuntu-latest
-      steps:
-        - name: Download artifacts
-          uses: actions/download-artifacts@v8
-          with:
-            name: windows-binaries
-            path: pspdecrypt.exe
-        - name:
-          uses: softprops/action-gh-release@v3
-          with:
-            tag_name: latest
-            name: windows-binary
-            prerelease: true
-            files: pspdecrypt-windows.zip
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        
+            
   build-macos-x86:
     runs-on: macos-15-intel
     steps:
@@ -105,3 +86,52 @@ jobs:
       run: |
         lipo pspdecrypt ~/work/pspdecrypt/pspdecrypt/artifact/pspdecrypt -create -output pspdecrypt
         rm -rf ~/work/pspdecrypt/pspdecrypt/artifact/
+
+
+  release:
+    needs: [build-linux, build-windows, build-macos-x86, build-macos-universal]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Linux
+        uses: actions/download-artifact@v8
+        with:
+          name: linux-binaries
+          path: release/linux
+
+      - name: Download Windows
+        uses: actions/download-artifact@v8
+        with:
+          name: windows-binaries
+          path: release/windows
+
+      - name: Download macOS Intel
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-intel-binaries
+          path: release/macos-x86_64
+
+      - name: Download macOS Universal
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-universal
+          path: release/macos-universal
+
+      - name: Package release
+        run: |
+          cd release
+          zip -r pspdecrypt-linux.zip linux
+          zip -r pspdecrypt-windows.zip windows
+          zip -r pspdecrypt-macos-x86_64.zip macos-x86_64
+          zip -r pspdecrypt-macos-universal.zip macos-universal
+
+      - name: Create Pre-Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: latest
+          prerelease: true
+          files: |
+            release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
