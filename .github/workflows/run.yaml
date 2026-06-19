@@ -4,6 +4,7 @@ on:
     branches:
       - master
 jobs:
+
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +23,7 @@ jobs:
         with:
           name: linux-binaries
           path: pspdecrypt
+          
   build-windows:
     runs-on: windows-latest
     defaults:
@@ -76,11 +78,11 @@ jobs:
         export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
         export CPLUS_INCLUDE_PATH=$INCLUDE_PATH:$(brew --prefix openssl)/include
         make CXX='clang++ -std=c++11 -target arm64-apple-darwin20.1.0'
-   - name: Upload Artifacts
-      uses: actions/upload-artifact@v7
-      with:
-        name: macos-arm64-binaries
-        path: pspdecrypt
+    - name: Upload Artifacts
+       uses: actions/upload-artifact@v7
+       with:
+         name: macos-arm64-binaries
+         path: pspdecrypt
 
   release:
     needs: [build-linux, build-windows, build-macos-x86, build-macos-arm64]
