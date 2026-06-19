@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Dependencies
         run: |
-          apt-get update
-          apt-get install clang automake autoconf p7zip-full sudo automake -y
+          sudo apt-get update
+          sudo apt-get install clang automake autoconf p7zip-full automake -y
 
       - name: Build
         run: make clean && make
