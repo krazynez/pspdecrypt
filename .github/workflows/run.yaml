@@ -45,7 +45,7 @@ jobs:
           path: pspdecrypt
         
   build-macos-x86:
-    runs-on: macos-14
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v7
     - name: Make binaries
