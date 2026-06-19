@@ -1,4 +1,4 @@
-name: pspdecrypt
+name: pspdecrypt for ARK 5 ( DAM )
 on:
   push:
     branches:
