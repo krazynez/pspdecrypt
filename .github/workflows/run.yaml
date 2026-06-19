@@ -4,7 +4,7 @@ on:
     branches:
       - master
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,29 +17,65 @@ jobs:
 
       - name: Build
         run: make clean && make
-      - name: Compress
-        run: |
-          zip -r pspdecrypt.zip pspdecrypt
-      - name: Upload
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: pspdecrypt-release
-          path: pspdecrypt.zip
-  release:
-    needs: build
-    runs-on: ubuntu-latest
+          name: linux-binaries
+          path: pspdecrypt
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v8
+      - uses: msys2/setup-msys2@v2
         with:
-          name: pspdecrypt-release
-          path: .
-      - name:
-        uses: softprops/action-gh-release@v3
+             install: >-
+                base-devel
+                git
+                mingw-w64-x86_64-clang
+                mingw-w64-x86_64-openssl
+      - uses: actions/checkout@v4
+      - name: Makes Binaries
+        run: make EXTRA_FLAG=-static
+      - name: Prepare Artifacts
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v7
         with:
-          tag_name: latest
-          files: pspdecrypt.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: windows-binaries
+          path: pspdecrypt
+        
+  build-macos-x86:
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v4
+    - name: Make binaries
+      run: |
+        export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
+        export CPLUS_INCLUDE_PATH=$INCLUDE_PATH:$(brew --prefix openssl)/include
+        make CXX='clang++ -std=c++11 -target x86_64-apple-darwin-macho'
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: macos-intel-binaries
+        path: pspdecrypt
 
-
+  build-macos-universal:
+    needs: build-macos-x86
+    runs-on: macos-14
+    steps:
+    - uses: actions/checkout@v4
+    - name: Make binaries
+      run: |
+        export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
+        export CPLUS_INCLUDE_PATH=$INCLUDE_PATH:$(brew --prefix openssl)/include
+        make CXX='clang++ -std=c++11 -target arm64-apple-darwin20.1.0'
+    - name: Download Artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: macos-intel-binaries
+        path: artifact
+    - name: Make Universal Binary
+      run: |
+        lipo pspdecrypt ~/work/pspdecrypt/pspdecrypt/artifact/pspdecrypt -create -output pspdecrypt
+        rm -rf ~/work/pspdecrypt/pspdecrypt/artifact/
