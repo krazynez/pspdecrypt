@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Dependencies
         run: |
@@ -35,7 +35,7 @@ jobs:
                 git
                 mingw-w64-x86_64-clang
                 mingw-w64-x86_64-openssl
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Makes Binaries
         run: make EXTRA_FLAG=-static
       - name: Upload Artifacts
@@ -47,7 +47,7 @@ jobs:
   build-macos-x86:
     runs-on: macos-12
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Make binaries
       run: |
         export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
@@ -63,7 +63,7 @@ jobs:
     needs: build-macos-x86
     runs-on: macos-14
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Make binaries
       run: |
         export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
