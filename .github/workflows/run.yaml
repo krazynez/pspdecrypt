@@ -52,7 +52,7 @@ jobs:
       run: |
         export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
         export CPLUS_INCLUDE_PATH=$INCLUDE_PATH:$(brew --prefix openssl)/include
-        make CXX='clang++ -std=c++11 -target x86_64-apple-darwin-macho'
+        make CXX='clang++ -arch x86_64 -std=c++11 -target x86_64-apple-darwin-macho'
     - name: Upload Artifacts
       uses: actions/upload-artifact@v7
       with:
