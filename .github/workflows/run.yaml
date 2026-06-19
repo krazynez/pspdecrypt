@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: windows-binaries
-          path: pspdecrypt
+          path: pspdecrypt.exe
         
   build-macos-x86:
     runs-on: macos-15-intel
