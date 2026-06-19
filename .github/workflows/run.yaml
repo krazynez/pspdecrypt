@@ -45,14 +45,25 @@ jobs:
           path: pspdecrypt
         
   build-macos-x86:
-    runs-on: macos-26
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v7
     - name: Make binaries
       run: |
-        export LIBRARY_PATH=$LIBRARY_PATH:$(brew --prefix openssl)/lib
-        export CPLUS_INCLUDE_PATH=$INCLUDE_PATH:$(brew --prefix openssl)/include
-        make CXX='clang++ -arch x86_64 -std=c++11 -target x86_64-apple-darwin-macho'
+         export ARCH=x86_64
+
+        export CC="clang -arch $ARCH"
+        export CXX="clang++ -arch $ARCH"
+
+        export CFLAGS="-arch $ARCH"
+        export CXXFLAGS="-arch $ARCH"
+        export LDFLAGS="-arch $ARCH"
+
+        export LIBRARY_PATH=$(brew --prefix openssl@3)/lib
+        export CPATH=$(brew --prefix openssl@3)/include
+
+        make clean
+        make CC="$CC" CXX="$CXX"
     - name: Upload Artifacts
       uses: actions/upload-artifact@v7
       with:
