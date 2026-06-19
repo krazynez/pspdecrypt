@@ -1,0 +1,42 @@
+name: pspdecrypt
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: alpine-latest
+    steps:
+      - name: Dependencies
+        run: |
+          apk update
+          apk add clang automake autoconf zip sudo automake
+
+      - name: Build
+        run: make clean && make
+      - name: Compress
+        run: |
+          zip -r pspdecrypt.zip pspdecrypt
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: pspdecrypt-release
+          path: pspdecrypt.zip
+release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: pspdecrypt-release
+          path: .
+      - name:
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: latest
+          files: pspdecrypt.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
