@@ -2,7 +2,7 @@ name: pspdecrypt for ARK 5 ( DAM )
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   build:
     runs-on: alpine-latest
